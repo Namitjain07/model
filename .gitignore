@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+# large / regenerable artifacts
+models/*.task
+models/*.pt
+models/*.onnx
+models/*.joblib
+data/
+outputs/
+gpu_cache/
+gpu_out/
+.env

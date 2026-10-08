@@ -1,0 +1,11 @@
+# vast.ai "PyTorch 2.x / CUDA 12" template already ships torch + torchvision; install the rest.
+transformers>=4.41
+accelerate>=0.30
+onnx>=1.16
+onnxscript>=0.1
+onnxruntime-gpu>=1.18
+opencv-python-headless>=4.9
+numpy>=1.26
+pandas>=2.0
+scikit-learn>=1.4
+huggingface_hub>=0.23
