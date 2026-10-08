@@ -100,7 +100,7 @@ def main():
             with torch.autocast(**amp): s = model(x[:, ::2]).float()
             loss = F.cross_entropy(s, y, label_smoothing=0.05)
             if teacher is not None:
-                with torch.no_grad(), torch.autocast(**amp): tl = teacher(pixel_values=x.to(next(teacher.parameters()).dtype)).logits.float()
+                with torch.no_grad(): tl = teacher(pixel_values=x.to(next(teacher.parameters()).dtype)).logits.float()
                 kd = F.kl_div(F.log_softmax(s / a.temp, -1), F.softmax(tl / a.temp, -1), reduction="batchmean") * a.temp ** 2
                 loss = (1 - a.alpha) * loss + a.alpha * kd
             f = (step + 1) / warm if step < warm else 0.5 * (1 + math.cos(math.pi * (step - warm) / max(1, steps - warm)))

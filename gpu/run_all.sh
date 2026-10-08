@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 FINAL=0; [ "${1:-}" = "--final" ] && FINAL=1
 STAGES="${STAGES:-setup download manifest preprocess train student evaluate export}"
 [ "${PUSH:-0}" = 1 ] && STAGES="$STAGES push"
-W=$(nproc); mkdir -p gpu_out/logs
+W=$(nproc); [ "$W" -gt 16 ] && W=16; mkdir -p gpu_out/logs
 has() { [[ " $STAGES " == *" $1 "* ]]; }
 log() { echo -e "\n=== $(date +%H:%M:%S) $* ==="; }
 

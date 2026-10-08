@@ -21,7 +21,7 @@ frame ─► YOLOX-M person boxes ─► light pose (RTMPose/MediaPipe) + flow G
 | student | `gpu/student.py` | TSM-MobileNetV3-Large (ImageNet init), online distillation from the teacher (T=2, α=0.5). Also an ablation without the teacher. |
 | evaluate | `gpu/evaluate.py` | threshold picked on **dev only** at ≤5 % / ≤2 % false-alarm rate, then applied unchanged to the held-out sets; AUC inside resolution buckets (shortcut check); false alarms per analysed hour. |
 | export | `gpu/export_onnx.py` | single-file ONNX for teacher (16×224²) and student (8×224²) + ONNX-Runtime parity check. |
-| push | `gpu/push_results.sh` | commits metrics / predictions / ONNX to `Namitjain07/model` under `results/<run>/` (git-lfs for files > 50 MB). |
+| push | `gpu/push_results.sh` | commits metrics / predictions / ONNX to `Namitjain07/model` under `results/<run>/` (git-lfs for files > 50 MB; the teacher is ~0.5 GB, so mind the 1 GB free LFS quota — set `NO_TEACHER=1` to skip it). |
 
 ### Data (all downloaded by `run_all.sh`)
 RWF-2000 (2,000 clips, MIT-labelled mirror), **RLVS (2,000 clips, no licence stated → research only)**, Surveillance-Fight (300 clips, MIT), AIRTLab (350 staged clips, research/education).
@@ -35,7 +35,7 @@ Groups = source video, so clips cut from one video never straddle train/dev.
 
 ## Renting the machine (vast.ai)
 * 1 × GPU with **≥ 24 GB** (RTX 4090 / A5000 / L4-24G / 3090), **≥ 8 vCPU**, 32 GB RAM, **80 GB disk**, image `pytorch/pytorch:2.x-cuda12.x-cudnn…` (or any "PyTorch" template), on-demand (not interruptible) is safer.
-* Expected: preprocessing 30–60 min (CPU-bound; 8 workers), teacher 6 epochs ≈ 1.5–2.5 h on a 4090, student ≈ 30–45 min ×2, evaluation + export minutes. Roughly **4–5 h ≈ $2–4**.
+* Rough estimate (not measured): preprocessing 20–60 min (CPU-bound, decoding 1080p videos is the slow part), teacher 6 epochs ≈ 0.5–1.5 h on a 4090, student ≈ 20–40 min ×2, evaluation + export minutes → **about 2–4 h ≈ $1–3**, plus download time.
 * Stop the instance when `ALL DONE` prints and results are pushed.
 
 ```bash

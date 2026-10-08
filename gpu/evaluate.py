@@ -2,7 +2,7 @@
 
   python gpu/evaluate.py --pred teacher=gpu_out/teacher_A/predictions.csv --pred student=gpu_out/student_A/predictions.csv --out gpu_out/metrics.json
 
- * The operating threshold is chosen on the DEV split only (the highest-recall point whose dev false-alarm rate is <= --max-fa),
+ * The operating threshold is chosen on the DEV split only (RWF dev clips by default; ~85 negatives, so a 5% rate is ~4 clips: coarse) (the highest-recall point whose dev false-alarm rate is <= --max-fa),
    then applied unchanged to every held-out set -> no threshold tuning on the test data.
  * Held-out = RWF-2000 val (official) + Surveillance-Fight + AIRTLab (protocol A).  With protocol B (--final) those sets were trained on,
    so the script refuses to call them held-out.
@@ -20,7 +20,7 @@ from sklearn.metrics import roc_auc_score
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--pred", action="append", required=True, help="name=path/to/predictions.csv (repeatable)")
-ap.add_argument("--out", default="gpu_out/metrics.json"); ap.add_argument("--clean", action="store_true", help="drop held-out clips flagged as near-duplicates of training sources (needs the manifest 'affected' column)"); ap.add_argument("--max-fa", type=float, nargs="+", default=[0.05, 0.02])
+ap.add_argument("--out", default="gpu_out/metrics.json"); ap.add_argument("--clean", action="store_true", help="drop held-out clips flagged as near-duplicates of training sources (needs the manifest 'affected' column)"); ap.add_argument("--max-fa", type=float, nargs="+", default=[0.05, 0.02]); ap.add_argument("--thr-datasets", nargs="+", default=["rwf"], help="datasets whose DEV clips set the threshold (default rwf: RLVS negatives are easy and would make the threshold too lax)")
 a = ap.parse_args(); args_clean = a.clean
 WIN = 5.0
 
@@ -46,7 +46,7 @@ def op(d, thr):
 
 res = {}
 for spec in a.pred:
-    name, path = spec.split("=", 1); df = pd.read_csv(path); dev = df[df.split == "dev"]
+    name, path = spec.split("=", 1); df = pd.read_csv(path); dev = df[(df.split == "dev") & df.dataset.isin(a.thr_datasets)]
     held = df[df.split == "heldout"]
     if "affected" in df.columns and args_clean: held = held[held.affected == 0]
     r = dict(n_dev=len(dev), dev_auc=auc(dev.label.values, dev.p_fight.values), heldout={}, note="")
