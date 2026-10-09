@@ -35,7 +35,7 @@ Groups = source video, so clips cut from one video never straddle train/dev.
 
 ## Renting the machine (vast.ai)
 * 1 × GPU with **≥ 24 GB** (RTX 4090 / A5000 / L4-24G / 3090), **≥ 8 vCPU**, 32 GB RAM, **80 GB disk**, image `pytorch/pytorch:2.x-cuda12.x-cudnn…` (or any "PyTorch" template), on-demand (not interruptible) is safer.
-* Rough estimate (not measured): preprocessing 20–60 min (CPU-bound, decoding 1080p videos is the slow part), teacher 6 epochs ≈ 0.5–1.5 h on a 4090, student ≈ 20–40 min ×2, evaluation + export minutes → **about 2–4 h ≈ $1–3**, plus download time.
+* Rough estimate (not measured): preprocessing 20–60 min (CPU-bound, decoding 1080p videos is the slow part), teacher 6 epochs ≈ 0.5–1.5 h on a 4090 (a 3090 is roughly 1.5× slower; it supports bf16, so nothing changes), student ≈ 20–40 min ×2, evaluation + export minutes → **about 2–4 h ≈ $1–3**, plus download time.
 * Stop the instance when `ALL DONE` prints and results are pushed.
 
 ```bash
